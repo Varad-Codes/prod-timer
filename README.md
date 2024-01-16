@@ -6,7 +6,9 @@ Still a work in progress, but it's usable and does what its meant to do
 
 ## Features
 
-- [x] Pomodoro timer (Work Timer & Break Timer)
+**Break Loops Are still WIP*
+
+- [-] Pomodoro timer (Work Timer & Break Timer)
 - [x] Customizable Pomodoro durations
 - [ ] Timer Overlay
 - [ ] Noitications
