@@ -1,7 +1,5 @@
-# Tauri + React + Typescript
+# ProdTimer - A minimal productivity timer
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+This is a minimal productivity timer that I made for myself. It's a simple timer that is based on the [Pomodoro Technique](https://en.wikipedia.org/wiki/Pomodoro_Technique).
 
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+Still a work in progress, but it's usable and does what its meant to do
