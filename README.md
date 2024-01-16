@@ -8,7 +8,7 @@ Still a work in progress, but it's usable and does what its meant to do
 
 **Break Loops Are still WIP*
 
-- [-] Pomodoro timer (Work Timer & Break Timer)
+- [ ] Pomodoro timer ( Transitions are broken )
 - [x] Customizable Pomodoro durations
 - [ ] Timer Overlay
 - [ ] Noitications
