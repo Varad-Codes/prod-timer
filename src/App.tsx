@@ -1,58 +1,104 @@
 import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/tauri";
+// import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
-  
-  const [lTime, setLTime] = useState("");
+  const [currentTime, setCurrentTime] = useState('25:00');
+  const [isRunning, setIsRunning] = useState(false);
+  const [cycle, setCycle] = useState('work');
+  const [userWorkTime, setUserWorkTime] = useState(25);
+  const [userBreakTime, setUserBreakTime] = useState(5);
+  const [progress, setProgress] = useState(0);
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
-  
   useEffect(() => {
-    let date = new Date();
-    setLTime(date.getHours().toString() + ":" + date.getMinutes().toString() + ":" + date.getSeconds().toString());
-  }, [setLTime])
+    let intervalId: number;
+
+    if (isRunning) {
+      intervalId = setInterval(() => {
+        handleTick();
+      }, 1000);
+    }
+
+    return () => clearInterval(intervalId);
+  }, [isRunning, currentTime, cycle, userWorkTime, userBreakTime]);
+
+  const handleStart = () => {
+    setIsRunning(true);
+  };
+
+  const handlePause = () => {
+    setIsRunning(false);
+  };
+
+  const handleReset = () => {
+    setCurrentTime(`${userWorkTime}:00`); // Use user-defined work time for reset
+    setCycle('work');
+    setIsRunning(false);
+  };
+
+  const handleTick = () => {
+    let minutes = parseInt(currentTime.slice(0, 2));
+    let seconds = parseInt(currentTime.slice(3));
+    
+    const totalDuration = cycle === 'work' ? userWorkTime : userBreakTime;
+    const remainingTime = parseInt(currentTime.slice(0, 2)) * 60 + parseInt(currentTime.slice(3));
+    const progress = remainingTime === 0 ? 100 : (totalDuration - remainingTime) / totalDuration * 100;
+    // const finalProgress = Math.min(Math.max(progress, 2), 100); // Ensure valid progress value
+    setProgress(progress);
+
+    if (seconds === 0) {
+      if (minutes === 0) {
+        switchCycle();
+      } else {
+        minutes--;
+        seconds = 59;
+      }
+    } else {
+      seconds--;
+    }
+
+    setCurrentTime(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+  };
+
+  const switchCycle = () => {
+    setCycle(cycle === 'work' ? 'break' : 'work');
+    setCurrentTime(cycle === 'work' ? `${userWorkTime}:00` : `${userBreakTime}:00`);
+  };
+
+  const handleWorkTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(event.target.value);
+    if (Number.isInteger(value) && value > 0) {
+      setUserWorkTime(value);
+      if (cycle === 'work') {
+        setCurrentTime(`${value}:00`); // Update current time based on new work time
+      }
+    }
+  };
+
+  const handleBreakTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(event.target.value);
+    if (Number.isInteger(value) && value > 0) {
+      setUserBreakTime(value);
+      if (cycle === 'break') {
+        setCurrentTime(`${value}:00`); // Update current time based on new break time
+      }
+    }
+  };
 
   return (
     <div className="container">
-      <h1>Welcome to Tauri!</h1>
-      <p>{lTime}</p>
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <h1>{cycle}</h1>
+      <div>{currentTime}</div>
+      <progress value={progress} max="100"></progress>
+      
+      <br />
+      <input type="number" value={userWorkTime} onChange={handleWorkTimeChange} placeholder="Work Time (minutes)" />
+      <input type="number" value={userBreakTime} onChange={handleBreakTimeChange} placeholder="Break Time (minutes)" />
+      
+      <div className="control-btn">
+      <button onClick={isRunning ? handlePause : handleStart}>{isRunning ? 'Pause' : 'Start'}</button>
+      <button onClick={handleReset}>Reset</button>
       </div>
-
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-
-      <p>{greetMsg}</p>
     </div>
   );
 }
