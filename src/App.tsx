@@ -62,6 +62,7 @@ function App() {
 
   const switchCycle = () => {
     setCycle(cycle === 'work' ? 'break' : 'work');
+    console.log("setting current pomodoro cycle to " + cycle);
     setCurrentTime(cycle === 'work' ? `${userWorkTime}:00` : `${userBreakTime}:00`);
   };
 
